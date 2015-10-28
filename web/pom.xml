@@ -59,7 +59,7 @@
         </dependency>
 
 
-        <!-- spring配置 -->
+        <!-- spring配置  -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
