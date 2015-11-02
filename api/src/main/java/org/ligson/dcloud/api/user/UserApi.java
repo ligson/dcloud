@@ -11,13 +11,13 @@ import java.util.List;
  * @author ligson
  */
 public interface UserApi {
-    public UserDto add(String name, String password, Boolean sex, Date birth);
+    public UserDto register(String name, String password, Boolean sex, Date birth);
 
-    public List<UserDto> find(UserDto userDto);
+    public List<UserDto> list(UserDto userDto);
 
     public int count(UserDto userDto);
 
-    public boolean update(UserDto userDto);
+    public boolean modify(UserDto userDto);
 
-    public boolean delete(UserDto userDto);
+    public boolean remove(UserDto userDto);
 }
