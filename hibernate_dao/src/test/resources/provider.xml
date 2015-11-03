@@ -19,7 +19,6 @@
     <!-- user-dao -->
     <dubbo:service interface="org.ligson.dcloud.dao.api.UserDao" ref="userDao" version="${dubbo.iterface.version}"/>
 
-
 </beans>
 
 

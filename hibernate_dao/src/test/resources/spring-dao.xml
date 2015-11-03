@@ -60,6 +60,5 @@
                       id="bussinessService"/>
         <aop:advisor advice-ref="baseServiceAdvice" pointcut-ref="bussinessService"/>
     </aop:config>
-
     <bean id="userDao" class="org.ligson.dcloud.dao.hibernate.impl.UserDaoImpl"/>
 </beans>

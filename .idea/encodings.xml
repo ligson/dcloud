@@ -9,13 +9,8 @@
     <file url="file://$PROJECT_DIR$/hibernate_dao/src/main/resources/config.properties" charset="GBK" />
     <file url="file://$PROJECT_DIR$/hibernate_dao/src/main/resources/db.properties" charset="GBK" />
     <file url="file://$PROJECT_DIR$/hibernate_dao/src/main/resources/dubbo.properties" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/hibernate_dao/src/main/resources/mail.properties" charset="GBK" />
     <file url="file://$PROJECT_DIR$/hibernate_dao/src/main/resources/provider.xml" charset="GBK" />
     <file url="file://$PROJECT_DIR$/hibernate_dao/src/main/resources/redis.properties" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/hibernate_dao/src/main/resources/sms.properties" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/hibernate_dao/src/main/resources/spring-common.xml" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/hibernate_dao/src/main/resources/spring-mybatis.xml" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/hibernate_dao/src/main/resources/spring-redis.xml" charset="GBK" />
     <file url="file://$PROJECT_DIR$/service" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/web" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
