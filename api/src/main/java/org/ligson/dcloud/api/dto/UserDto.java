@@ -1,5 +1,6 @@
 package org.ligson.dcloud.api.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Date;
  *
  * @author ligson
  */
-public class UserDto {
+public class UserDto implements Serializable {
     private String id;
     private String name;
     private String password;
