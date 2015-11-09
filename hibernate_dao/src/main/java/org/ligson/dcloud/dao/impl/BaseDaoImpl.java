@@ -5,8 +5,12 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.ligson.dcloud.dao.BaseDao;
+import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ReflectionUtils;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -309,13 +313,13 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public T getById(long id) {
+    public T getById(String id) {
         // TODO Auto-generated method stub
         return (T) getCurrentSession().get(getGenericType(0), id);
     }
 
     @Override
-    public void updateProperty(String property, String propertyValue, long id) {
+    public void updateProperty(String property, String propertyValue, String id) {
         // TODO Auto-generated method stub
         String hql;
         if (propertyValue instanceof String) {
@@ -370,6 +374,46 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     public void saveOrUpdate(T t) {
         // TODO Auto-generated method stub
         getCurrentSession().saveOrUpdate(t);
+    }
+
+    @Override
+    public List<T> findByExample(T t, int offset, int max) {
+        PropertyDescriptor[] props = BeanUtils.getPropertyDescriptors(t.getClass());
+        List<String> propNames = new ArrayList<String>();
+        List<Object> propValues = new ArrayList<Object>();
+        for (PropertyDescriptor prop : props) {
+            try {
+                Field field = t.getClass().getField(prop.getName());
+                Object value = ReflectionUtils.getField(field, t);
+                if (value != null) {
+                    propNames.add(prop.getName());
+                    propValues.add(value);
+                }
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
+        return findAllByAnd(propNames, propValues, max, offset);
+    }
+
+    @Override
+    public long countByExample(T t) {
+        PropertyDescriptor[] props = BeanUtils.getPropertyDescriptors(t.getClass());
+        List<String> propNames = new ArrayList<String>();
+        List<Object> propValues = new ArrayList<Object>();
+        for (PropertyDescriptor prop : props) {
+            try {
+                Field field = t.getClass().getField(prop.getName());
+                Object value = ReflectionUtils.getField(field, t);
+                if (value != null) {
+                    propNames.add(prop.getName());
+                    propValues.add(value);
+                }
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
+        return countByAnd(propNames, propValues);
     }
 
 }

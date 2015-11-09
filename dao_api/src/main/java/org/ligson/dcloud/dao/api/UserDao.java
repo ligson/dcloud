@@ -15,6 +15,8 @@ public interface UserDao {
 
     public List<UserDto> find(UserDto userDto);
 
+    public UserDto findById(String id);
+
     public int count(UserDto userDto);
 
     public boolean update(UserDto userDto);

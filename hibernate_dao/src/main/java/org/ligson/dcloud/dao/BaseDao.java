@@ -12,9 +12,9 @@ public interface BaseDao<T> {
 
     public void update(T t);
 
-    public void updateProperty(String property, String propertyValue, long id);
+    public void updateProperty(String property, String propertyValue, String id);
 
-    public T getById(long id);
+    public T getById(String id);
 
     public T findBy(String propertyName, Object propertyValue);
 
@@ -40,5 +40,9 @@ public interface BaseDao<T> {
     public List<T> list(int offset, int max);
 
     public int countAll();
+
+    public List<T> findByExample(T t, int offset, int max);
+
+    public long countByExample(T t);
 
 }

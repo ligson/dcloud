@@ -34,8 +34,6 @@ public class UserDaoImpl extends BaseDaoImpl<User> implements UserDao {
     }
 
     public List<UserDto> find(UserDto userDto) {
-
-
         List<String> props = new ArrayList<>();
         List<Object> values = new ArrayList<>();
         if (userDto.getId() != null) {
@@ -68,9 +66,22 @@ public class UserDaoImpl extends BaseDaoImpl<User> implements UserDao {
         return dtos;
     }
 
-    public int count(UserDto userDto) {
+    @Override
+    public UserDto findById(String id) {
+        User user = getById(id);
+        if (user != null) {
+            UserDto dto = new UserDto();
+            BeanUtils.copyProperties(user, dto);
+            return dto;
+        } else {
+            return null;
+        }
+    }
 
-        return 0;
+    public int count(UserDto userDto) {
+        User user = new User();
+        BeanUtils.copyProperties(userDto, user);
+        return (int) countByExample(user);
     }
 
     public boolean update(UserDto userDto) {
