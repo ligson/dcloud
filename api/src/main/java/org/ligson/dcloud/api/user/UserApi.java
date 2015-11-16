@@ -13,7 +13,7 @@ import java.util.List;
 public interface UserApi {
     public UserDto register(String name, String password, Boolean sex, Date birth);
 
-    public List<UserDto> list(UserDto userDto);
+    public List<UserDto> list(UserDto userDto, int max, int offset);
 
     public int count(UserDto userDto);
 

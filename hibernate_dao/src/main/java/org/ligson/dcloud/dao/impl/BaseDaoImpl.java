@@ -11,6 +11,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -92,7 +93,10 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
         List<T> list = new ArrayList<>();
         // TODO Auto-generated method stub
         if (propertyNames.size() == propertyValues.size()) {
-            String hql = "select count(*) from " + this.getGenericTypeName() + " where ";
+            String hql = "select count(*) from " + this.getGenericTypeName();
+            if (propertyNames.size() > 0) {
+                hql += " where ";
+            }
             int len = propertyNames.size();
             for (int i = 0; i < len; i++) {
                 if (i == len - 1) {
@@ -225,7 +229,10 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
         List<T> list = new ArrayList<>();
         // TODO Auto-generated method stub
         if (propertyNames.size() == propertyValues.size()) {
-            String hql = "from " + this.getGenericTypeName() + " where ";
+            String hql = "from " + this.getGenericTypeName();
+            if (propertyNames.size() > 0) {
+                hql += " where ";
+            }
             int len = propertyNames.size();
             for (int i = 0; i < len; i++) {
                 if (i == len - 1) {
@@ -248,8 +255,10 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
             }
             logger.debug(hql);
             Query query = getCurrentSession().createQuery(hql);
-            query.setFirstResult(offset);
-            query.setMaxResults(max);
+            if (offset >= 0 && max >= 0) {
+                query.setFirstResult(offset);
+                query.setMaxResults(max);
+            }
             list = query.list();
             return list;
         } else {
@@ -383,13 +392,18 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
         List<Object> propValues = new ArrayList<Object>();
         for (PropertyDescriptor prop : props) {
             try {
-                Field field = t.getClass().getField(prop.getName());
-                Object value = ReflectionUtils.getField(field, t);
+                if (prop.getName().equals("class")) {
+                    continue;
+                }
+                String methodName = Character.toUpperCase(prop.getName().charAt(0)) + prop.getName().substring(1);
+                Method method = BeanUtils.findMethod(t.getClass(), "get" + methodName);
+                assert method != null;
+                Object value = ReflectionUtils.invokeMethod(method, t);
                 if (value != null) {
                     propNames.add(prop.getName());
                     propValues.add(value);
                 }
-            } catch (NoSuchFieldException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -403,13 +417,18 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
         List<Object> propValues = new ArrayList<Object>();
         for (PropertyDescriptor prop : props) {
             try {
-                Field field = t.getClass().getField(prop.getName());
-                Object value = ReflectionUtils.getField(field, t);
+                if (prop.getName().equals("class")) {
+                    continue;
+                }
+                String methodName = Character.toUpperCase(prop.getName().charAt(0)) + prop.getName().substring(1);
+                Method method = BeanUtils.findMethod(t.getClass(), "get" + methodName);
+                assert method != null;
+                Object value = ReflectionUtils.invokeMethod(method, t);
                 if (value != null) {
                     propNames.add(prop.getName());
                     propValues.add(value);
                 }
-            } catch (NoSuchFieldException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

@@ -23,8 +23,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> find(UserDto userDto) {
-        return userDao.find(userDto);
+    public List<UserDto> find(UserDto userDto, int max, int offset) {
+        return userDao.find(userDto, max, offset);
     }
 
     @Override

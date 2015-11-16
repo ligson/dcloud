@@ -61,5 +61,7 @@
         <aop:advisor advice-ref="baseServiceAdvice" pointcut-ref="bussinessService"/>
     </aop:config>
 
-    <bean id="userDao" class="org.ligson.dcloud.dao.hibernate.impl.UserDaoImpl"/>
+    <bean id="userDao" class="org.ligson.dcloud.dao.hibernate.impl.UserDaoImpl">
+        <property name="sessionFactory" ref="mySessionFactory"/>
+    </bean>
 </beans>

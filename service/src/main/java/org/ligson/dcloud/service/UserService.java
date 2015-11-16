@@ -11,7 +11,7 @@ import java.util.List;
 public interface UserService {
     public UserDto add(String name, String password, Boolean sex, Date birth);
 
-    public List<UserDto> find(UserDto userDto);
+    public List<UserDto> find(UserDto userDto,int max,int offset);
 
     public int count(UserDto userDto);
 

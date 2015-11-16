@@ -33,7 +33,7 @@ public class UserDaoImpl extends BaseDaoImpl<User> implements UserDao {
         return userDto;
     }
 
-    public List<UserDto> find(UserDto userDto) {
+    public List<UserDto> find(UserDto userDto, int max, int offset) {
         List<String> props = new ArrayList<>();
         List<Object> values = new ArrayList<>();
         if (userDto.getId() != null) {
@@ -56,7 +56,7 @@ public class UserDaoImpl extends BaseDaoImpl<User> implements UserDao {
             props.add("password");
             values.add(userDto.getPassword());
         }
-        List<User> users = findAllByAnd(props, values, -1, -1);
+        List<User> users = findAllByAnd(props, values, max, offset);
         List<UserDto> dtos = new ArrayList<UserDto>();
         for (User user1 : users) {
             UserDto userDto1 = new UserDto();
@@ -85,10 +85,30 @@ public class UserDaoImpl extends BaseDaoImpl<User> implements UserDao {
     }
 
     public boolean update(UserDto userDto) {
-        return false;
+        User user = getById(userDto.getId());
+        if (userDto.getPassword() == null) {
+            BeanUtils.copyProperties(userDto, user, "password");
+        } else {
+            BeanUtils.copyProperties(userDto, user);
+        }
+
+        update(user);
+        return true;
     }
 
     public boolean delete(UserDto userDto) {
-        return false;
+        try {
+            User user = new User();
+            BeanUtils.copyProperties(userDto, user);
+            long count = countByExample(user);
+            List<User> users = findByExample(user, 0, (int) count);
+            for (User user1 : users) {
+                delete(user1);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

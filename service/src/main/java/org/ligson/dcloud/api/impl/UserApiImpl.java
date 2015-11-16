@@ -27,8 +27,8 @@ public class UserApiImpl implements UserApi {
     }
 
     @Override
-    public List<UserDto> list(UserDto userDto) {
-        return userService.find(userDto);
+    public List<UserDto> list(UserDto userDto, int max, int offset) {
+        return userService.find(userDto, max, offset);
     }
 
     @Override

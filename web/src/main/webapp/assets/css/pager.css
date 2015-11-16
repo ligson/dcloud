@@ -1,0 +1,26 @@
+/*******************分页组件 start*********************/
+.prevLink, .nextLink, .step, .gap, .currentStep {
+    position: relative;
+    float: left;
+    padding: 6px 12px;
+    margin-left: -1px;
+    line-height: 1.42857143;
+    color: #428bca;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.prevLink:hover, .nextLink:hover, .step:hover, .currentStep:hover {
+    color: #2a6496;
+    background-color: #eee;
+    border-color: #ddd;
+}
+
+.currentStep {
+    background-color: #499ef3;
+    color: #fff;
+    border-color: #499ef3;
+}
+
+/*******************分页组件 end*********************/
