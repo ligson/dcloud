@@ -18,7 +18,7 @@
 <@override name="body">
 <div class="container">
     <div class="col-md-10">
-        <form class="form-horizontal" method="post" action="/user/saveUser">
+        <form class="form-horizontal" method="post" action="/index/saveUser">
             <div class="form-group">
                 <label for="inputName3" class="col-sm-2 control-label">用户名</label>
 

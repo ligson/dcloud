@@ -23,8 +23,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> find(UserDto userDto, int max, int offset) {
-        return userDao.find(userDto, max, offset);
+    public List<UserDto> find(UserDto userDto, int max, int offset, String sort, String order) {
+        return userDao.find(userDto, max, offset,sort,order);
     }
 
     @Override
@@ -40,5 +40,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean delete(UserDto userDto) {
         return userDao.delete(userDto);
+    }
+
+    @Override
+    public UserDto findById(String id) {
+        return userDao.findById(id);
     }
 }

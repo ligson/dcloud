@@ -27,8 +27,13 @@ public class UserApiImpl implements UserApi {
     }
 
     @Override
-    public List<UserDto> list(UserDto userDto, int max, int offset) {
-        return userService.find(userDto, max, offset);
+    public List<UserDto> list(UserDto userDto, int max, int offset, String sort, String order) {
+        return userService.find(userDto, max, offset, sort, order);
+    }
+
+    @Override
+    public UserDto get(String id) {
+        return userService.findById(id);
     }
 
     @Override
@@ -44,5 +49,18 @@ public class UserApiImpl implements UserApi {
     @Override
     public boolean remove(UserDto userDto) {
         return userService.delete(userDto);
+    }
+
+    @Override
+    public UserDto login(String name, String password) {
+        UserDto userDto = new UserDto();
+        userDto.setName(name);
+        userDto.setPassword(password);
+        List<UserDto> userDtos = userService.find(userDto, 1, 0, null, null);
+        if (userDtos.size() > 0) {
+            return userDtos.get(0);
+        } else {
+            return null;
+        }
     }
 }

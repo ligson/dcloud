@@ -13,11 +13,15 @@ import java.util.List;
 public interface UserApi {
     public UserDto register(String name, String password, Boolean sex, Date birth);
 
-    public List<UserDto> list(UserDto userDto, int max, int offset);
+    public List<UserDto> list(UserDto userDto, int max, int offset, String sort, String order);
+
+    public UserDto get(String id);
 
     public int count(UserDto userDto);
 
     public boolean modify(UserDto userDto);
 
     public boolean remove(UserDto userDto);
+
+    public UserDto login(String name, String password);
 }

@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -44,29 +43,26 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     @SuppressWarnings("unchecked")
     @Override
     public List<T> findAllBy(String propertyName, Object propertyValue) {
-        String hql;
-        if (propertyName == null) {
-            hql = "from " + this.getGenericTypeName();
-        } else {
-            if (propertyValue instanceof String) {
-
-                hql = "from " + this.getGenericTypeName() + " where "
-                        + propertyName + "='" + propertyValue + "'";
-            } else {
-
-                hql = "from " + this.getGenericTypeName() + " where "
-                        + propertyName + "=" + propertyValue;
-            }
-        }
+        String hql = generalHql(propertyName, propertyValue);
         Query query = getCurrentSession().createQuery(hql);
         return query.list();
     }
+
 
     @Transactional("transactionManager")
     @SuppressWarnings("unchecked")
     @Override
     public List<T> findAllBy(String propertyName, Object propertyValue,
                              int offset, int max) {
+        String hql = generalHql(propertyName, propertyValue);
+
+        Query query = getCurrentSession().createQuery(hql);
+        query.setFirstResult(offset);
+        query.setMaxResults(max);
+        return query.list();
+    }
+
+    private String generalHql(String propertyName, Object propertyValue) {
         String hql;
         if (propertyName == null) {
             hql = "from " + this.getGenericTypeName();
@@ -81,42 +77,43 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
                         + propertyName + "=" + propertyValue;
             }
         }
-        Query query = getCurrentSession().createQuery(hql);
-        query.setFirstResult(offset);
-        query.setMaxResults(max);
-        List<T> list = query.list();
-        return list;
+        return hql;
+    }
+
+    private String generalHql(List<String> propertyNames, List<Object> propertyValues) {
+        String hql = "";
+        int len = propertyNames.size();
+        for (int i = 0; i < len; i++) {
+            if (i == len - 1) {
+                if (propertyValues.get(i) instanceof String) {
+                    hql += propertyNames.get(i) + "='"
+                            + propertyValues.get(i) + "'";
+                } else {
+                    hql += propertyNames.get(i) + "="
+                            + propertyValues.get(i);
+                }
+            } else {
+                if (propertyValues.get(i) instanceof String) {
+                    hql += propertyNames.get(i) + "='"
+                            + propertyValues.get(i) + "' and ";
+                } else {
+                    hql += propertyNames.get(i) + "="
+                            + propertyValues.get(i) + " and ";
+                }
+            }
+        }
+        return hql;
     }
 
     @Override
     public long countByAnd(List<String> propertyNames, List<Object> propertyValues) {
-        List<T> list = new ArrayList<>();
         // TODO Auto-generated method stub
         if (propertyNames.size() == propertyValues.size()) {
             String hql = "select count(*) from " + this.getGenericTypeName();
             if (propertyNames.size() > 0) {
                 hql += " where ";
             }
-            int len = propertyNames.size();
-            for (int i = 0; i < len; i++) {
-                if (i == len - 1) {
-                    if (propertyValues.get(i) instanceof String) {
-                        hql += propertyNames.get(i) + "='"
-                                + propertyValues.get(i) + "'";
-                    } else {
-                        hql += propertyNames.get(i) + "="
-                                + propertyValues.get(i);
-                    }
-                } else {
-                    if (propertyValues.get(i) instanceof String) {
-                        hql += propertyNames.get(i) + "='"
-                                + propertyValues.get(i) + "' and ";
-                    } else {
-                        hql += propertyNames.get(i) + "="
-                                + propertyValues.get(i) + " and ";
-                    }
-                }
-            }
+            hql += generalHql(propertyNames, propertyValues);
             logger.debug(hql);
             Query query = getCurrentSession().createQuery(hql);
             return (long) query.uniqueResult();
@@ -187,27 +184,11 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     public T findByAnd(List<String> propertyNames, List<Object> propertyValues) {
         // TODO Auto-generated method stub
         if (propertyNames.size() == propertyValues.size()) {
-            String hql = "from " + this.getGenericTypeName() + " where ";
-            int len = propertyNames.size();
-            for (int i = 0; i < len; i++) {
-                if (i == len - 1) {
-                    if (propertyValues.get(i) instanceof String) {
-                        hql += propertyNames.get(i) + "='"
-                                + propertyValues.get(i) + "'";
-                    } else {
-                        hql += propertyNames.get(i) + "="
-                                + propertyValues.get(i);
-                    }
-                } else {
-                    if (propertyValues.get(i) instanceof String) {
-                        hql += propertyNames.get(i) + "='"
-                                + propertyValues.get(i) + "' and ";
-                    } else {
-                        hql += propertyNames.get(i) + "="
-                                + propertyValues.get(i) + " and ";
-                    }
-                }
+            String hql = "from " + getGenericTypeName();
+            if (propertyNames.size() > 0) {
+                hql += " where ";
             }
+            hql += generalHql(propertyNames, propertyValues);
             logger.debug(hql);
             Query query = getCurrentSession().createQuery(hql);
             query.setFirstResult(0);
@@ -226,6 +207,11 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 
     @Override
     public List<T> findAllByAnd(List<String> propertyNames, List<Object> propertyValues, int max, int offset) {
+        return findAllByAnd(propertyNames, propertyValues, max, offset, null, null);
+    }
+
+    @Override
+    public List<T> findAllByAnd(List<String> propertyNames, List<Object> propertyValues, int max, int offset, String sort, String order) {
         List<T> list = new ArrayList<>();
         // TODO Auto-generated method stub
         if (propertyNames.size() == propertyValues.size()) {
@@ -233,25 +219,9 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
             if (propertyNames.size() > 0) {
                 hql += " where ";
             }
-            int len = propertyNames.size();
-            for (int i = 0; i < len; i++) {
-                if (i == len - 1) {
-                    if (propertyValues.get(i) instanceof String) {
-                        hql += propertyNames.get(i) + "='"
-                                + propertyValues.get(i) + "'";
-                    } else {
-                        hql += propertyNames.get(i) + "="
-                                + propertyValues.get(i);
-                    }
-                } else {
-                    if (propertyValues.get(i) instanceof String) {
-                        hql += propertyNames.get(i) + "='"
-                                + propertyValues.get(i) + "' and ";
-                    } else {
-                        hql += propertyNames.get(i) + "="
-                                + propertyValues.get(i) + " and ";
-                    }
-                }
+            hql += generalHql(propertyNames, propertyValues);
+            if (sort != null && order != null) {
+                hql += " " + sort + " " + order;
             }
             logger.debug(hql);
             Query query = getCurrentSession().createQuery(hql);
@@ -269,31 +239,16 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     @SuppressWarnings("unchecked")
     @Override
     public List<T> findAllBy(String propertyName, Object propertyValue,
-                             String orderProperty) {
+                             String sort, String order) {
         // TODO Auto-generated method stub
-        String hql;
-        if (propertyName == null || propertyValue == null) {
-            hql = "from " + this.getGenericTypeName();
-        } else {
-            if (propertyValue instanceof String) {
-
-                hql = "from " + this.getGenericTypeName() + " where "
-                        + propertyName + "='" + propertyValue + "' order by "
-                        + orderProperty;
-            } else {
-
-                hql = "from " + this.getGenericTypeName() + " where "
-                        + propertyName + "=" + propertyValue + " order by "
-                        + orderProperty;
-            }
-        }
+        String hql = generalHql(propertyName, propertyValue);
         Query query = getCurrentSession().createQuery(hql);
         return query.list();
     }
 
     @Override
     public List<T> findAllBy(String propertyName, Object propertyValue,
-                             int offset, int max, String orderProperty) {
+                             int offset, int max, String sort, String order) {
         // TODO Auto-generated method stub
         String hql;
         if (propertyName == null || propertyValue == null) {
@@ -303,13 +258,12 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 
                 hql = "from " + this.getGenericTypeName() + " where "
                         + propertyName + "='" + propertyValue + "' order by "
-                        + orderProperty;
+                        + sort + " " + order;
             } else {
 
                 hql = "from " + this.getGenericTypeName() + " where "
                         + propertyName + "=" + propertyValue + " order by "
-                        + orderProperty;
-                ;
+                        + sort + " " + order;
             }
         }
         Query query = getCurrentSession().createQuery(hql);
@@ -328,16 +282,22 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     }
 
     @Override
-    public void updateProperty(String property, String propertyValue, String id) {
+    public void updateProperty(String property, Object propertyValue, String id) {
         // TODO Auto-generated method stub
-        String hql;
+        StringBuilder builder = new StringBuilder("update ");
+        builder.append(this.getGenericTypeName());
+        builder.append(" set ");
+        builder.append(property);
+        builder.append(" =");
         if (propertyValue instanceof String) {
-            hql = "update " + this.getGenericTypeName() + " set " + property
-                    + "='" + propertyValue + "' where id='" + id + "'";
+            builder.append("'");
+            builder.append(propertyValue);
+            builder.append("'");
         } else {
-            hql = "update " + this.getGenericTypeName() + " set " + property
-                    + "=" + propertyValue + "' where id='" + id + "'";
+            builder.append(propertyValue);
         }
+        builder.append(" where id='").append(id).append("'");
+        String hql = builder.toString();
         Query query = getCurrentSession().createQuery(hql);
         query.executeUpdate();
     }
@@ -357,16 +317,24 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 
         Query query = getCurrentSession().createQuery(hql);
         long count = (Long) query.uniqueResult();
-        if (count == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return count == 0;
     }
 
     @Override
     public List<T> list(int offset, int max) {
         Query query = getCurrentSession().createQuery("from " + getGenericTypeName());
+        query.setMaxResults(max);
+        query.setFirstResult(offset);
+        return query.list();
+    }
+
+    @Override
+    public List<T> list(int offset, int max, String sort, String order) {
+        String hql = "from " + getGenericTypeName();
+        if (sort != null && order != null) {
+            hql += " " + sort + " " + order;
+        }
+        Query query = getCurrentSession().createQuery(hql);
         query.setMaxResults(max);
         query.setFirstResult(offset);
         return query.list();
@@ -387,9 +355,19 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 
     @Override
     public List<T> findByExample(T t, int offset, int max) {
+        return findByExample(t, offset, max, null, null);
+    }
+
+    @Override
+    public List<T> findByExample(T t, int offset, int max, String sort, String order) {
         PropertyDescriptor[] props = BeanUtils.getPropertyDescriptors(t.getClass());
-        List<String> propNames = new ArrayList<String>();
-        List<Object> propValues = new ArrayList<Object>();
+        List<String> propNames = new ArrayList<>();
+        List<Object> propValues = new ArrayList<>();
+        propFillValue(propNames, propValues, props, t);
+        return findAllByAnd(propNames, propValues, max, offset, sort, order);
+    }
+
+    private void propFillValue(List<String> propNames, List<Object> propValues, PropertyDescriptor[] props, T t) {
         for (PropertyDescriptor prop : props) {
             try {
                 if (prop.getName().equals("class")) {
@@ -407,31 +385,14 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
                 e.printStackTrace();
             }
         }
-        return findAllByAnd(propNames, propValues, max, offset);
     }
 
     @Override
     public long countByExample(T t) {
         PropertyDescriptor[] props = BeanUtils.getPropertyDescriptors(t.getClass());
-        List<String> propNames = new ArrayList<String>();
-        List<Object> propValues = new ArrayList<Object>();
-        for (PropertyDescriptor prop : props) {
-            try {
-                if (prop.getName().equals("class")) {
-                    continue;
-                }
-                String methodName = Character.toUpperCase(prop.getName().charAt(0)) + prop.getName().substring(1);
-                Method method = BeanUtils.findMethod(t.getClass(), "get" + methodName);
-                assert method != null;
-                Object value = ReflectionUtils.invokeMethod(method, t);
-                if (value != null) {
-                    propNames.add(prop.getName());
-                    propValues.add(value);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        List<String> propNames = new ArrayList<>();
+        List<Object> propValues = new ArrayList<>();
+        propFillValue(propNames, propValues, props, t);
         return countByAnd(propNames, propValues);
     }
 

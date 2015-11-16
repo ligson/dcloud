@@ -33,7 +33,7 @@ public class UserDaoImpl extends BaseDaoImpl<User> implements UserDao {
         return userDto;
     }
 
-    public List<UserDto> find(UserDto userDto, int max, int offset) {
+    public List<UserDto> find(UserDto userDto, int max, int offset, String sort, String order) {
         List<String> props = new ArrayList<>();
         List<Object> values = new ArrayList<>();
         if (userDto.getId() != null) {
