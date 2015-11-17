@@ -1,35 +1,49 @@
-<#import "include/pager.ftl" as pager/>
 <@override name="title">用户登录</@override>
 <@override name="head">
-<link href="/assets/css/pager.css" rel="stylesheet"/>
+<link type="text/css" rel="stylesheet" href="/assets/js/bootstrapvalidator-0.5.2/dist/css/bootstrapValidator.min.css"/>
+<link type="text/css" rel="stylesheet" href="/assets/css/index.css"/>
+<script type="text/javascript" src="/assets/js/bootstrapvalidator-0.5.2/dist/js/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="/assets/js/dcloud/index.js"></script>
 </@override>
 
 <@override name="body">
 <div class="container">
-    <div class="col-md-10">
-        <form class="form-horizontal" method="post" action="/index/login">
-            <div class="form-group">
-                <label for="inputName3" class="col-sm-2 control-label">用户名</label>
+    <div class="modal show" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <#--<button type="button" class="close">x</button>-->
+                    <h1 class="text-center text-primary">登录</h1>
+                </div>
+                <div class="modal-body  col-md-12">
+                    <form id="loginForm" action="/index/login" method="post" class="form center-block">
+                        <div class="form-group">
+                            <input style="display:none;"/>
+                            <input type="text" class="form-control input-md" placeholder="用户名" name="name"
+                                   value="${name}" id="name" autocomplete="off"/>
+                        </div>
+                        <div class="form-group">
+                            <input style="display:none;"/>
+                            <input type="password" class="form-control input-md" placeholder="登录密码" name="password"
+                                   value="${password}" id="password" autocomplete="off"/>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-md btn-block">立刻登录</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <#if msg>
+                        <span class="pull-left alert alert-danger">${msg}</span>
+                    </#if>
 
-                <div class="col-sm-10">
-                    <input type="text" name="name" class="form-control" id="inputName3" placeholder="请输入用户名">
+                    <span><a href="#">找回密码</a></span>&nbsp;&nbsp;
+                    <span><a href="/index/register" class="pull-right">注册</a></span>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="inputPassword3" class="col-sm-2 control-label">密码</label>
-
-                <div class="col-sm-10">
-                    <input type="password" name="password" class="form-control" id="inputPassword3" placeholder="请输入密码">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default">登录</button>
-                    <a class="btn btn-primary" href="/index/register">注册</a>
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
+
 </div>
 </@override>
 <@extends name="layout/index.ftl"/>
